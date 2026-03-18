@@ -1,12 +1,22 @@
-# Lisa Luong's Portfolio Website
-## PROJECT PLAN
+# Eeveelution Popularity Tracker
 
-I wanted my midterm project to be a basic portfolio website, in hopes to build upon it in the future with full customization. I have created a simple landing page using Claude Code, consisting of a nav bar, introductory content, and footer.
+## Project Plan
 
-The About page will include a my headshot, my profile and career objectives, and links to contact me.
+My midterm project will allow users to choose who their favorite Pokemon eeveelution is and write a comment about them. As more users submit their thoughts, there will be a live tracker that displays the top three most popular eeveelutions.
 
-The Experience page will list my technical experiences with screen captures of my work in a gallery format.
+# Features
 
-The Projects page will display my projects with a brief description, development process, and links to those websites.
+User login function
+Allow user to create/edit/delete a submission
+Search or filter for a certain eeveelution
+Sort submissions by popularity
+Allow user to "like" other user's submissions
+Display live popularity tracker
 
-Aesthetics-wise, I want a simple and modern feel - kind of like an art exhibit. I will generate a color palette and research portfolio UIs for inspiration.
+# Techstack
+
+Built using Claude Code in VSCode
+GitHub for version control
+Deployed using Netlify
+Supabase Auth for signup/login/logout
+Supabase for cloud database
