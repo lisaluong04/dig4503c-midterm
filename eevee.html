@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Who's that Eevee?</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #1a1a1a;
+      color: #d4d4d4;
+      font-family: sans-serif;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.8rem;
+      color: #f0f0f0;
+      margin-bottom: 2rem;
+    }
+
+    /* --- Selection grid --- */
+    #selection-section {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card {
+      background-color: #2a2a2a;
+      border: 2px solid #3a3a3a;
+      border-radius: 8px;
+      cursor: pointer;
+      padding: 0.75rem 0.5rem;
+      text-align: center;
+      transition: border-color 0.15s, background-color 0.15s;
+      user-select: none;
+    }
+
+    .card img {
+      width: 100%;
+      max-width: 110px;
+      display: block;
+      margin: 0 auto 0.5rem;
+    }
+
+    .card span {
+      font-size: 0.9rem;
+      color: #b0b0b0;
+    }
+
+    .card.selected {
+      border-color: #aaa;
+      background-color: #3c3c3c;
+    }
+
+    .card.disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* --- Comment box --- */
+    .comment-wrap {
+      margin-bottom: 1.25rem;
+    }
+
+    .comment-wrap label {
+      display: block;
+      font-size: 0.9rem;
+      color: #a0a0a0;
+      margin-bottom: 0.4rem;
+    }
+
+    textarea {
+      width: 100%;
+      background-color: #2a2a2a;
+      border: 1px solid #4a4a4a;
+      border-radius: 6px;
+      color: #e0e0e0;
+      font-family: inherit;
+      font-size: 0.95rem;
+      padding: 0.6rem 0.75rem;
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #777;
+    }
+
+    /* --- Submit button --- */
+    #submit-btn {
+      display: block;
+      width: 100%;
+      padding: 0.85rem;
+      background-color: #3a3a3a;
+      color: #f0f0f0;
+      border: 1px solid #555;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: not-allowed;
+      opacity: 0.45;
+      transition: background-color 0.2s, border-color 0.2s, opacity 0.2s;
+    }
+
+    #submit-btn.ready {
+      cursor: pointer;
+      opacity: 1;
+    }
+
+    #submit-btn.ready:hover {
+      background-color: #4e4e4e;
+      border-color: #888;
+    }
+
+    /* --- Results section --- */
+    #result-section {
+      display: none;
+      max-width: 720px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    #result-section h2 {
+      font-size: 1.4rem;
+      color: #f0f0f0;
+      margin-bottom: 1.5rem;
+    }
+
+    .result-grid {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    .result-card {
+      background-color: #2a2a2a;
+      border: 1px solid #4a4a4a;
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+      width: 160px;
+    }
+
+    .result-card img {
+      width: 100%;
+      max-width: 120px;
+      display: block;
+      margin: 0 auto 0.6rem;
+    }
+
+    .result-card span {
+      font-size: 1rem;
+      color: #d4d4d4;
+    }
+
+    #result-comment {
+      font-style: italic;
+      color: #888;
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+    }
+
+    #restart-btn {
+      display: inline-block;
+      background-color: #3a3a3a;
+      color: #f0f0f0;
+      border: 1px solid #555;
+      border-radius: 6px;
+      padding: 0.7rem 2rem;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    #restart-btn:hover {
+      background-color: #4e4e4e;
+      border-color: #888;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Selection UI -->
+  <section id="selection-section">
+    <h1>Select your top 3 eeveelutions!</h1>
+
+    <div class="grid" id="card-grid">
+      <div class="card" data-name="Espeon">
+        <img src="images/Espeon.png" alt="Espeon" />
+        <span>Espeon</span>
+      </div>
+      <div class="card" data-name="Flareon">
+        <img src="images/Flareon.png" alt="Flareon" />
+        <span>Flareon</span>
+      </div>
+      <div class="card" data-name="Glaceon">
+        <img src="images/Glaceon.png" alt="Glaceon" />
+        <span>Glaceon</span>
+      </div>
+      <div class="card" data-name="Jolteon">
+        <img src="images/Jolteon.png" alt="Jolteon" />
+        <span>Jolteon</span>
+      </div>
+      <div class="card" data-name="Leafeon">
+        <img src="images/Leafeon.png" alt="Leafeon" />
+        <span>Leafeon</span>
+      </div>
+      <div class="card" data-name="Sylveon">
+        <img src="images/Sylveon.png" alt="Sylveon" />
+        <span>Sylveon</span>
+      </div>
+      <div class="card" data-name="Umbreon">
+        <img src="images/Umbreon.png" alt="Umbreon" />
+        <span>Umbreon</span>
+      </div>
+      <div class="card" data-name="Vaporeon">
+        <img src="images/Vaporeon.png" alt="Vaporeon" />
+        <span>Vaporeon</span>
+      </div>
+    </div>
+
+    <div class="comment-wrap">
+      <label for="comment">Leave a comment (optional)</label>
+      <textarea id="comment" placeholder="Say something"></textarea>
+    </div>
+
+    <button id="submit-btn" disabled>Submit</button>
+  </section>
+
+  <!-- Results UI -->
+  <section id="result-section">
+    <h2>Your top 3 eeveelutions!</h2>
+    <div class="result-grid" id="result-grid"></div>
+    <p id="result-comment"></p>
+    <button id="restart-btn">Pick again</button>
+  </section>
+
+  <script>
+    const cards = document.querySelectorAll('.card');
+    const submitBtn = document.getElementById('submit-btn');
+    const selectionSection = document.getElementById('selection-section');
+    const resultSection = document.getElementById('result-section');
+    const resultGrid = document.getElementById('result-grid');
+    const resultComment = document.getElementById('result-comment');
+    const commentBox = document.getElementById('comment');
+    const restartBtn = document.getElementById('restart-btn');
+
+    const MAX = 3;
+    let selected = [];
+
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        if (card.classList.contains('disabled')) return;
+
+        if (card.classList.contains('selected')) {
+          card.classList.remove('selected');
+          selected = selected.filter(n => n !== card.dataset.name);
+        } else {
+          if (selected.length >= MAX) return;
+          card.classList.add('selected');
+          selected.push(card.dataset.name);
+        }
+
+        // Disable unselected cards once 3 are chosen
+        cards.forEach(c => {
+          if (!c.classList.contains('selected')) {
+            c.classList.toggle('disabled', selected.length >= MAX);
+          }
+        });
+
+        // Enable submit only when exactly 3 are picked
+        const ready = selected.length === MAX;
+        submitBtn.disabled = !ready;
+        submitBtn.classList.toggle('ready', ready);
+      });
+    });
+
+    submitBtn.addEventListener('click', () => {
+      resultGrid.innerHTML = '';
+
+      selected.forEach(name => {
+        const card = document.createElement('div');
+        card.className = 'result-card';
+        card.innerHTML = `
+          <img src="images/${name}.png" alt="${name}" />
+          <span>${name}</span>
+        `;
+        resultGrid.appendChild(card);
+      });
+
+      const comment = commentBox.value.trim();
+      resultComment.textContent = comment ? `"${comment}"` : '';
+
+      selectionSection.style.display = 'none';
+      resultSection.style.display = 'block';
+    });
+
+    restartBtn.addEventListener('click', () => {
+      selected = [];
+      cards.forEach(c => c.classList.remove('selected', 'disabled'));
+      submitBtn.disabled = true;
+      submitBtn.classList.remove('ready');
+      commentBox.value = '';
+      resultSection.style.display = 'none';
+      selectionSection.style.display = 'block';
+    });
+  </script>
+
+</body>
+</html>
