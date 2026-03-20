@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Who's that Eevee?</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #1a1a1a;
+      color: #d4d4d4;
+      font-family: sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 3rem 1rem;
+    }
+
+    .post {
+      background-color: #242424;
+      border: 1px solid #3a3a3a;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 480px;
+      overflow: hidden;
+    }
+
+    /* Header row */
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid #333;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background-color: #3a3a3a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      color: #ccc;
+      flex-shrink: 0;
+    }
+
+    .post-meta {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .post-username {
+      font-weight: 600;
+      color: #f0f0f0;
+      font-size: 0.95rem;
+    }
+
+    .post-subtitle {
+      font-size: 0.78rem;
+      color: #666;
+    }
+
+    /* Body */
+    .post-body {
+      padding: 1.25rem;
+    }
+
+    .post-body h2 {
+      font-size: 1rem;
+      color: #b0b0b0;
+      font-weight: 400;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-size: 0.78rem;
+    }
+
+    .picks {
+      display: flex;
+      justify-content: space-around;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .pick {
+      flex: 1;
+      background-color: #2e2e2e;
+      border: 1px solid #3a3a3a;
+      border-radius: 8px;
+      padding: 0.75rem 0.5rem;
+      text-align: center;
+    }
+
+    .pick img {
+      width: 100%;
+      max-width: 80px;
+      display: block;
+      margin: 0 auto 0.5rem;
+    }
+
+    .pick span {
+      font-size: 0.85rem;
+      color: #c0c0c0;
+    }
+
+    .post-comment {
+      font-size: 0.95rem;
+      color: #a0a0a0;
+      line-height: 1.5;
+      border-top: 1px solid #333;
+      padding-top: 1rem;
+      font-style: italic;
+    }
+
+    /* Footer */
+    .post-footer {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid #333;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    button {
+      background-color: #3a3a3a;
+      color: #f0f0f0;
+      border: 1px solid #555;
+      border-radius: 6px;
+      padding: 0.6rem 1.5rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    button:hover {
+      background-color: #4e4e4e;
+      border-color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="post">
+    <div class="post-header">
+      <div class="avatar" id="avatar"></div>
+      <div class="post-meta">
+        <span class="post-username" id="post-username"></span>
+        <span class="post-subtitle" id="post-date"></span>
+      </div>
+    </div>
+
+    <div class="post-body">
+      <h2>Top 3 Eeveelutions:</h2>
+      <div class="picks" id="picks"></div>
+      <p class="post-comment" id="post-comment" style="display:none;"></p>
+    </div>
+
+    <div class="post-footer">
+      <button id="edit-btn">Edit Submission</button>
+    </div>
+  </div>
+
+  <script>
+    const username = sessionStorage.getItem('username') || 'Trainer';
+    const picks = JSON.parse(sessionStorage.getItem('picks') || '[]');
+    const comment = sessionStorage.getItem('comment') || '';
+
+    // Avatar initial
+    document.getElementById('avatar').textContent = username.charAt(0).toUpperCase();
+    document.getElementById('post-username').textContent = username;
+
+    // Date/time
+    const now = new Date();
+    const formatted = now.toLocaleString('en-US', {
+      month: 'long', day: 'numeric', year: 'numeric',
+      hour: '2-digit', minute: '2-digit', hour12: false
+    });
+    document.getElementById('post-date').textContent = formatted;
+
+    // Picks
+    const picksEl = document.getElementById('picks');
+    picks.forEach(name => {
+      const div = document.createElement('div');
+      div.className = 'pick';
+      div.innerHTML = `
+        <img src="images/${name}.png" alt="${name}" />
+        <span>${name}</span>
+      `;
+      picksEl.appendChild(div);
+    });
+
+    // Comment
+    if (comment) {
+      const commentEl = document.getElementById('post-comment');
+      commentEl.textContent = `"${comment}"`;
+      commentEl.style.display = 'block';
+    }
+
+    document.getElementById('edit-btn').addEventListener('click', () => {
+      window.location.href = 'eevee.html';
+    });
+  </script>
+</body>
+</html>

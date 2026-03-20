@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Who's that Eevee?</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #1a1a1a;
+      color: #d4d4d4;
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .card {
+      background-color: #242424;
+      border: 1px solid #3a3a3a;
+      border-radius: 10px;
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 360px;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      color: #f0f0f0;
+      text-align: center;
+      margin-bottom: 1.75rem;
+    }
+
+    .field {
+      margin-bottom: 1.1rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      color: #a0a0a0;
+      margin-bottom: 0.35rem;
+    }
+
+    input {
+      width: 100%;
+      background-color: #2e2e2e;
+      border: 1px solid #4a4a4a;
+      border-radius: 6px;
+      color: #e0e0e0;
+      font-family: inherit;
+      font-size: 0.95rem;
+      padding: 0.6rem 0.75rem;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #777;
+    }
+
+    #error-msg {
+      color: #c0392b;
+      font-size: 0.85rem;
+      margin-bottom: 0.75rem;
+      min-height: 1.1em;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.85rem;
+      background-color: #3a3a3a;
+      color: #f0f0f0;
+      border: 1px solid #555;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.2s, border-color 0.2s;
+      margin-top: 0.5rem;
+    }
+
+    button:hover {
+      background-color: #4e4e4e;
+      border-color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Login</h1>
+
+    <div class="field">
+      <label for="username">Username</label>
+      <input type="text" id="username" autocomplete="username" />
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" autocomplete="current-password" />
+    </div>
+
+    <p id="error-msg"></p>
+
+    <button id="login-btn">Login</button>
+  </div>
+
+  <script>
+    const loginBtn = document.getElementById('login-btn');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const errorMsg = document.getElementById('error-msg');
+
+    loginBtn.addEventListener('click', () => {
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value;
+
+      if (!username || !password) {
+        errorMsg.textContent = 'Please enter both a username and password.';
+        return;
+      }
+
+      errorMsg.textContent = '';
+      sessionStorage.setItem('username', username);
+      window.location.href = 'eevee.html';
+    });
+
+    // Allow pressing Enter to submit
+    [usernameInput, passwordInput].forEach(input => {
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') loginBtn.click();
+      });
+    });
+  </script>
+</body>
+</html>

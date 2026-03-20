@@ -127,71 +127,12 @@
       border-color: #888;
     }
 
-    /* --- Results section --- */
-    #result-section {
-      display: none;
-      max-width: 720px;
-      margin: 0 auto;
+    /* --- Greeting --- */
+    #greeting {
       text-align: center;
-    }
-
-    #result-section h2 {
-      font-size: 1.4rem;
-      color: #f0f0f0;
-      margin-bottom: 1.5rem;
-    }
-
-    .result-grid {
-      display: flex;
-      justify-content: center;
-      gap: 2rem;
-      flex-wrap: wrap;
-      margin-bottom: 2rem;
-    }
-
-    .result-card {
-      background-color: #2a2a2a;
-      border: 1px solid #4a4a4a;
-      border-radius: 8px;
-      padding: 1rem;
-      text-align: center;
-      width: 160px;
-    }
-
-    .result-card img {
-      width: 100%;
-      max-width: 120px;
-      display: block;
-      margin: 0 auto 0.6rem;
-    }
-
-    .result-card span {
       font-size: 1rem;
-      color: #d4d4d4;
-    }
-
-    #result-comment {
-      font-style: italic;
       color: #888;
-      margin-bottom: 2rem;
-      font-size: 0.95rem;
-    }
-
-    #restart-btn {
-      display: inline-block;
-      background-color: #3a3a3a;
-      color: #f0f0f0;
-      border: 1px solid #555;
-      border-radius: 6px;
-      padding: 0.7rem 2rem;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: background-color 0.2s, border-color 0.2s;
-    }
-
-    #restart-btn:hover {
-      background-color: #4e4e4e;
-      border-color: #888;
+      margin-bottom: 0.5rem;
     }
   </style>
 </head>
@@ -199,6 +140,7 @@
 
   <!-- Selection UI -->
   <section id="selection-section">
+    <p id="greeting"></p>
     <h1>Select your top 3 eeveelutions!</h1>
 
     <div class="grid" id="card-grid">
@@ -244,26 +186,44 @@
     <button id="submit-btn" disabled>Submit</button>
   </section>
 
-  <!-- Results UI -->
-  <section id="result-section">
-    <h2>Your top 3 eeveelutions!</h2>
-    <div class="result-grid" id="result-grid"></div>
-    <p id="result-comment"></p>
-    <button id="restart-btn">Pick again</button>
-  </section>
-
   <script>
+    const username = sessionStorage.getItem('username');
+    if (username) {
+      document.getElementById('greeting').textContent = `Hi ${username}!`;
+    }
+
+    // Restore prior picks if returning from review page
+    const savedPicks = JSON.parse(sessionStorage.getItem('picks') || '[]');
+    const savedComment = sessionStorage.getItem('comment') || '';
+
     const cards = document.querySelectorAll('.card');
     const submitBtn = document.getElementById('submit-btn');
-    const selectionSection = document.getElementById('selection-section');
-    const resultSection = document.getElementById('result-section');
-    const resultGrid = document.getElementById('result-grid');
-    const resultComment = document.getElementById('result-comment');
     const commentBox = document.getElementById('comment');
-    const restartBtn = document.getElementById('restart-btn');
 
     const MAX = 3;
     let selected = [];
+
+    function applyState() {
+      cards.forEach(c => c.classList.remove('selected', 'disabled'));
+      selected.forEach(name => {
+        const card = document.querySelector(`.card[data-name="${name}"]`);
+        if (card) card.classList.add('selected');
+      });
+      if (selected.length >= MAX) {
+        cards.forEach(c => {
+          if (!c.classList.contains('selected')) c.classList.add('disabled');
+        });
+      }
+      const ready = selected.length === MAX;
+      submitBtn.disabled = !ready;
+      submitBtn.classList.toggle('ready', ready);
+    }
+
+    if (savedPicks.length) {
+      selected = savedPicks;
+      commentBox.value = savedComment;
+      applyState();
+    }
 
     cards.forEach(card => {
       card.addEventListener('click', () => {
@@ -278,14 +238,12 @@
           selected.push(card.dataset.name);
         }
 
-        // Disable unselected cards once 3 are chosen
         cards.forEach(c => {
           if (!c.classList.contains('selected')) {
             c.classList.toggle('disabled', selected.length >= MAX);
           }
         });
 
-        // Enable submit only when exactly 3 are picked
         const ready = selected.length === MAX;
         submitBtn.disabled = !ready;
         submitBtn.classList.toggle('ready', ready);
@@ -293,33 +251,9 @@
     });
 
     submitBtn.addEventListener('click', () => {
-      resultGrid.innerHTML = '';
-
-      selected.forEach(name => {
-        const card = document.createElement('div');
-        card.className = 'result-card';
-        card.innerHTML = `
-          <img src="images/${name}.png" alt="${name}" />
-          <span>${name}</span>
-        `;
-        resultGrid.appendChild(card);
-      });
-
-      const comment = commentBox.value.trim();
-      resultComment.textContent = comment ? `"${comment}"` : '';
-
-      selectionSection.style.display = 'none';
-      resultSection.style.display = 'block';
-    });
-
-    restartBtn.addEventListener('click', () => {
-      selected = [];
-      cards.forEach(c => c.classList.remove('selected', 'disabled'));
-      submitBtn.disabled = true;
-      submitBtn.classList.remove('ready');
-      commentBox.value = '';
-      resultSection.style.display = 'none';
-      selectionSection.style.display = 'block';
+      sessionStorage.setItem('picks', JSON.stringify(selected));
+      sessionStorage.setItem('comment', commentBox.value.trim());
+      window.location.href = 'review.html';
     });
   </script>
 
