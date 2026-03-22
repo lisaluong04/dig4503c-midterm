@@ -1,0 +1,32 @@
+{
+  "name": "dig4503c-midterm",
+  "version": "1.0.0",
+  "description": "My midterm project will allow users to choose who their favorite Pokemon eeveelution is and write a comment about them. As more users submit their thoughts, there will be a live tracker that displays the top three most popular eeveelutions.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "netlify dev:exec drizzle-kit migrate",
+    "db:studio": "netlify dev:exec drizzle-kit studio"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lisaluong04/dig4503c-midterm.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/lisaluong04/dig4503c-midterm/issues"
+  },
+  "homepage": "https://github.com/lisaluong04/dig4503c-midterm#readme",
+  "dependencies": {
+    "@netlify/blobs": "^10.7.4",
+    "drizzle-orm": "^0.45.1",
+    "netlify": "^24.4.0"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.10"
+  }
+}
