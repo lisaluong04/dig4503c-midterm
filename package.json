@@ -22,7 +22,9 @@
   },
   "homepage": "https://github.com/lisaluong04/dig4503c-midterm#readme",
   "dependencies": {
+    "@neondatabase/serverless": "^1.0.2",
     "@netlify/blobs": "^10.7.4",
+    "@netlify/neon": "^0.1.2",
     "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.1",
     "netlify": "^24.4.0",
