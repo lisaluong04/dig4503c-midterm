@@ -23,10 +23,13 @@
   "homepage": "https://github.com/lisaluong04/dig4503c-midterm#readme",
   "dependencies": {
     "@netlify/blobs": "^10.7.4",
+    "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.1",
-    "netlify": "^24.4.0"
+    "netlify": "^24.4.0",
+    "pg": "^8.20.0"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "drizzle-kit": "^0.31.10"
   }
 }

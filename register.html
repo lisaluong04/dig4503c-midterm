@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Who's that Eevee?</title>
+  <title>Sign Up — Who's that Eevee?</title>
   <style>
     * {
       margin: 0;
@@ -108,7 +108,7 @@
 </head>
 <body>
   <div class="card">
-    <h1>Login</h1>
+    <h1>Sign Up</h1>
 
     <div class="field">
       <label for="username">Username</label>
@@ -117,36 +117,48 @@
 
     <div class="field">
       <label for="password">Password</label>
-      <input type="password" id="password" autocomplete="current-password" />
+      <input type="password" id="password" autocomplete="new-password" />
+    </div>
+
+    <div class="field">
+      <label for="confirm-password">Confirm Password</label>
+      <input type="password" id="confirm-password" autocomplete="new-password" />
     </div>
 
     <p id="error-msg"></p>
 
-    <button id="login-btn">Login</button>
-    <p class="switch">Don't have an account? <a href="register.html">Sign up</a></p>
+    <button id="register-btn">Sign Up</button>
+    <p class="switch">Already have an account? <a href="login.html">Log in</a></p>
   </div>
 
   <script>
-    const loginBtn = document.getElementById('login-btn');
+    const registerBtn = document.getElementById('register-btn');
     const usernameInput = document.getElementById('username');
     const passwordInput = document.getElementById('password');
+    const confirmInput = document.getElementById('confirm-password');
     const errorMsg = document.getElementById('error-msg');
 
-    loginBtn.addEventListener('click', async () => {
+    registerBtn.addEventListener('click', async () => {
       const username = usernameInput.value.trim();
       const password = passwordInput.value;
+      const confirm = confirmInput.value;
 
-      if (!username || !password) {
-        errorMsg.textContent = 'Please enter both a username and password.';
+      if (!username || !password || !confirm) {
+        errorMsg.textContent = 'Please fill out all fields.';
+        return;
+      }
+
+      if (password !== confirm) {
+        errorMsg.textContent = 'Passwords do not match.';
         return;
       }
 
       errorMsg.textContent = '';
-      loginBtn.disabled = true;
-      loginBtn.textContent = 'Logging in...';
+      registerBtn.disabled = true;
+      registerBtn.textContent = 'Creating account...';
 
       try {
-        const res = await fetch('/.netlify/functions/login', {
+        const res = await fetch('/.netlify/functions/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, password })
@@ -155,7 +167,7 @@
         const data = await res.json();
 
         if (!res.ok) {
-          errorMsg.textContent = data.error || 'Login failed.';
+          errorMsg.textContent = data.error || 'Registration failed.';
           return;
         }
 
@@ -164,15 +176,14 @@
       } catch {
         errorMsg.textContent = 'Network error. Please try again.';
       } finally {
-        loginBtn.disabled = false;
-        loginBtn.textContent = 'Login';
+        registerBtn.disabled = false;
+        registerBtn.textContent = 'Sign Up';
       }
     });
 
-    // Allow pressing Enter to submit
-    [usernameInput, passwordInput].forEach(input => {
+    [usernameInput, passwordInput, confirmInput].forEach(input => {
       input.addEventListener('keydown', e => {
-        if (e.key === 'Enter') loginBtn.click();
+        if (e.key === 'Enter') registerBtn.click();
       });
     });
   </script>

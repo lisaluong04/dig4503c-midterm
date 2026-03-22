@@ -5,3 +5,9 @@ export const posts = pgTable('posts', {
     title: varchar({ length: 255 }).notNull(),
     content: text().notNull().default('')
 });
+
+export const users = pgTable('users', {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    username: varchar({ length: 100 }).notNull().unique(),
+    passwordHash: text().notNull()
+});
