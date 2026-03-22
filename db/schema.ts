@@ -1,4 +1,4 @@
-import { integer, pgTable, varchar, text } from 'drizzle-orm/pg-core';
+import { integer, pgTable, varchar, text, timestamp, unique } from 'drizzle-orm/pg-core';
 
 export const posts = pgTable('posts', {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -11,3 +11,19 @@ export const users = pgTable('users', {
     username: varchar({ length: 100 }).notNull().unique(),
     passwordHash: text().notNull()
 });
+
+export const userPosts = pgTable('user_posts', {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    username: varchar({ length: 100 }).notNull(),
+    picks: text().notNull(),
+    comment: text().notNull().default(''),
+    createdAt: timestamp('created_at').notNull().defaultNow()
+});
+
+export const likes = pgTable('likes', {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    postId: integer('post_id').notNull().references(() => userPosts.id, { onDelete: 'cascade' }),
+    username: varchar({ length: 100 }).notNull()
+}, (table) => ({
+    uniqueUserPost: unique().on(table.postId, table.username)
+}));

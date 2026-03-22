@@ -134,9 +134,37 @@
       color: #888;
       margin-bottom: 0.5rem;
     }
+
+    /* --- Nav bar --- */
+    #navbar {
+      display: flex;
+      justify-content: flex-end;
+      max-width: 720px;
+      margin: 0 auto 1.5rem;
+    }
+
+    #logout-btn {
+      background: none;
+      border: 1px solid #444;
+      border-radius: 6px;
+      color: #888;
+      cursor: pointer;
+      font-size: 0.85rem;
+      padding: 0.4rem 1rem;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    #logout-btn:hover {
+      border-color: #777;
+      color: #d4d4d4;
+    }
   </style>
 </head>
 <body>
+
+  <div id="navbar">
+    <button id="logout-btn">Logout</button>
+  </div>
 
   <!-- Selection UI -->
   <section id="selection-section">
@@ -188,9 +216,15 @@
 
   <script>
     const username = sessionStorage.getItem('username');
-    if (username) {
-      document.getElementById('greeting').textContent = `Hi ${username}!`;
+    if (!username) {
+      window.location.replace('login.html');
     }
+    document.getElementById('greeting').textContent = `Hi ${username}!`;
+
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      sessionStorage.clear();
+      window.location.href = 'login.html';
+    });
 
     // Restore prior picks if returning from review page
     const savedPicks = JSON.parse(sessionStorage.getItem('picks') || '[]');
@@ -250,10 +284,38 @@
       });
     });
 
-    submitBtn.addEventListener('click', () => {
-      sessionStorage.setItem('picks', JSON.stringify(selected));
-      sessionStorage.setItem('comment', commentBox.value.trim());
-      window.location.href = 'review.html';
+    submitBtn.addEventListener('click', async () => {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+
+      const comment = commentBox.value.trim();
+      const existingPostId = sessionStorage.getItem('postId');
+
+      try {
+        const res = await fetch('/.netlify/functions/save-post', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            postId: existingPostId ? parseInt(existingPostId) : undefined,
+            username,
+            picks: selected,
+            comment
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+
+        sessionStorage.setItem('postId', data.postId);
+        sessionStorage.setItem('picks', JSON.stringify(selected));
+        sessionStorage.setItem('comment', comment);
+        sessionStorage.setItem('postAuthor', username);
+        window.location.href = 'review.html';
+      } catch {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit';
+        submitBtn.classList.add('ready');
+      }
     });
   </script>
 
