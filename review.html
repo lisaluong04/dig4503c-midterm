@@ -48,6 +48,80 @@
       color: #d4d4d4;
     }
 
+    /* --- Controls --- */
+    #controls {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    #search {
+      width: 100%;
+      background-color: #2a2a2a;
+      border: 1px solid #3a3a3a;
+      border-radius: 6px;
+      color: #e0e0e0;
+      font-family: inherit;
+      font-size: 0.9rem;
+      padding: 0.55rem 0.85rem;
+    }
+
+    #search:focus {
+      outline: none;
+      border-color: #666;
+    }
+
+    #sort {
+      width: 100%;
+      background-color: #2a2a2a;
+      border: 1px solid #3a3a3a;
+      border-radius: 6px;
+      color: #d4d4d4;
+      font-family: inherit;
+      font-size: 0.9rem;
+      padding: 0.55rem 0.85rem;
+      cursor: pointer;
+    }
+
+    #sort:focus { outline: none; border-color: #666; }
+
+    .filter-label {
+      font-size: 0.78rem;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    #filter-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .chip {
+      background: none;
+      border: 1px solid #3a3a3a;
+      border-radius: 20px;
+      color: #888;
+      cursor: pointer;
+      font-size: 0.8rem;
+      padding: 0.3rem 0.85rem;
+      transition: border-color 0.15s, color 0.15s, background-color 0.15s;
+    }
+
+    .chip:hover {
+      border-color: #666;
+      color: #d4d4d4;
+      background: none;
+    }
+
+    .chip.active {
+      border-color: #999;
+      color: #f0f0f0;
+      background-color: #3a3a3a;
+    }
+
     /* --- Feed --- */
     #feed {
       display: flex;
@@ -227,6 +301,26 @@
     <div id="navbar">
       <button id="logout-btn">Logout</button>
     </div>
+    <div id="controls">
+      <input id="search" type="text" placeholder="Search by username..." />
+      <select id="sort">
+        <option value="newest">Sort: Newest</option>
+        <option value="likes-high">Sort: Most Liked</option>
+        <option value="likes-low">Sort: Least Liked</option>
+      </select>
+      <span class="filter-label">Filter by Eeveelution</span>
+      <div id="filter-chips">
+        <button class="chip" data-name="Espeon">Espeon</button>
+        <button class="chip" data-name="Flareon">Flareon</button>
+        <button class="chip" data-name="Glaceon">Glaceon</button>
+        <button class="chip" data-name="Jolteon">Jolteon</button>
+        <button class="chip" data-name="Leafeon">Leafeon</button>
+        <button class="chip" data-name="Sylveon">Sylveon</button>
+        <button class="chip" data-name="Umbreon">Umbreon</button>
+        <button class="chip" data-name="Vaporeon">Vaporeon</button>
+      </div>
+    </div>
+
     <div id="feed">
       <p id="loading">Loading posts...</p>
     </div>
@@ -335,7 +429,7 @@
           sessionStorage.removeItem('comment');
           sessionStorage.removeItem('postAuthor');
           sessionStorage.removeItem('postId');
-          card.remove();
+          window.location.href = 'eevee.html';
         });
 
         footerRight.append(editBtn, deleteBtn);
@@ -346,24 +440,71 @@
       return card;
     }
 
+    let allPosts = [];
+    let activeFilters = new Set();
+
+    function applyAndRender() {
+      const query = document.getElementById('search').value.trim().toLowerCase();
+      const sortVal = document.getElementById('sort').value;
+
+      let result = allPosts.filter(post => {
+        const matchesUser = !query || post.username.toLowerCase().includes(query);
+        const matchesFilter = activeFilters.size === 0 ||
+          post.picks.some(p => activeFilters.has(p));
+        return matchesUser && matchesFilter;
+      });
+
+      result.sort((a, b) => {
+        if (sortVal === 'likes-high') return b.likeCount - a.likeCount;
+        if (sortVal === 'likes-low')  return a.likeCount - b.likeCount;
+        // newest: user's post first, then by date
+        if (a.username === username && b.username !== username) return -1;
+        if (b.username === username && a.username !== username) return  1;
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+
+      const feed = document.getElementById('feed');
+      feed.innerHTML = '';
+      if (result.length === 0) {
+        feed.innerHTML = '<p id="loading">No posts match.</p>';
+      } else {
+        result.forEach(post => feed.appendChild(buildPost(post)));
+      }
+    }
+
     async function loadFeed() {
       const res = await fetch(`/.netlify/functions/get-all-posts?username=${encodeURIComponent(username)}`);
       const data = await res.json();
-      const feed = document.getElementById('feed');
-      feed.innerHTML = '';
 
       if (!data.posts || data.posts.length === 0) {
-        feed.innerHTML = '<p id="loading">No posts yet. Be the first!</p>';
+        document.getElementById('feed').innerHTML = '<p id="loading">No posts yet. Be the first!</p>';
         return;
       }
 
-      const sorted = [...data.posts].sort((a, b) => {
-        if (a.username === username) return -1;
-        if (b.username === username) return 1;
-        return 0;
-      });
-      sorted.forEach(post => feed.appendChild(buildPost(post)));
+      allPosts = data.posts;
+      applyAndRender();
     }
+
+    // Search
+    document.getElementById('search').addEventListener('input', applyAndRender);
+
+    // Sort
+    document.getElementById('sort').addEventListener('change', applyAndRender);
+
+    // Filter chips
+    document.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const name = chip.dataset.name;
+        if (activeFilters.has(name)) {
+          activeFilters.delete(name);
+          chip.classList.remove('active');
+        } else {
+          activeFilters.add(name);
+          chip.classList.add('active');
+        }
+        applyAndRender();
+      });
+    });
 
     loadFeed();
   </script>
