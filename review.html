@@ -48,6 +48,65 @@
       color: #d4d4d4;
     }
 
+    /* --- Chart --- */
+    #chart-section {
+      background-color: #242424;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    #chart-section h2 {
+      font-size: 0.75rem;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 1rem;
+    }
+
+    #chart {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .bar-label {
+      width: 80px;
+      font-size: 0.85rem;
+      color: #b0b0b0;
+      flex-shrink: 0;
+      text-align: right;
+    }
+
+    .bar-track {
+      flex: 1;
+      background-color: #2e2e2e;
+      border-radius: 4px;
+      height: 22px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background-color: #555;
+      border-radius: 4px;
+      transition: width 0.6s ease;
+    }
+
+    .bar-count {
+      width: 30px;
+      font-size: 0.82rem;
+      color: #666;
+      flex-shrink: 0;
+    }
+
     /* --- Controls --- */
     #controls {
       display: flex;
@@ -301,12 +360,17 @@
     <div id="navbar">
       <button id="logout-btn">Logout</button>
     </div>
+    <div id="chart-section">
+      <h2>Top 3 Most Picked Eeveelutions</h2>
+      <div id="chart"></div>
+    </div>
+
     <div id="controls">
       <input id="search" type="text" placeholder="Search by username..." />
       <select id="sort">
-        <option value="newest">Sort: Newest</option>
-        <option value="likes-high">Sort: Most Liked</option>
-        <option value="likes-low">Sort: Least Liked</option>
+        <option value="newest">Newest</option>
+        <option value="likes-high">Most Popular</option>
+        <option value="likes-low">Least Popular</option>
       </select>
       <span class="filter-label">Filter by Eeveelution</span>
       <div id="filter-chips">
@@ -443,6 +507,34 @@
     let allPosts = [];
     let activeFilters = new Set();
 
+    function renderChart(posts) {
+      const counts = {};
+      posts.forEach(post => post.picks.forEach(p => {
+        counts[p] = (counts[p] || 0) + 1;
+      }));
+      const top3 = Object.entries(counts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3);
+      const max = top3[0]?.[1] || 1;
+      const container = document.getElementById('chart');
+      container.innerHTML = '';
+      if (top3.length === 0) {
+        container.innerHTML = '<span style="font-size:0.85rem;color:#555;">No data yet.</span>';
+        return;
+      }
+      top3.forEach(([name, count]) => {
+        const pct = (count / max) * 100;
+        const row = document.createElement('div');
+        row.className = 'bar-row';
+        row.innerHTML = `
+          <span class="bar-label">${name}</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+          <span class="bar-count">${count}</span>
+        `;
+        container.appendChild(row);
+      });
+    }
+
     function applyAndRender() {
       const query = document.getElementById('search').value.trim().toLowerCase();
       const sortVal = document.getElementById('sort').value;
@@ -482,6 +574,7 @@
       }
 
       allPosts = data.posts;
+      renderChart(allPosts);
       applyAndRender();
     }
 

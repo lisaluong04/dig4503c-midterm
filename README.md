@@ -18,5 +18,4 @@ My midterm project will allow users to choose who their favorite Pokemon eeveelu
 - Built using Claude Code in VSCode
 - GitHub for version control
 - Deployed using Netlify
-- Supabase Auth for signup/login/logout
-- Supabase for cloud database
+- Neon for database

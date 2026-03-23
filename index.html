@@ -19,12 +19,13 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+      padding: 2rem 1rem;
     }
 
     .container {
       text-align: center;
+      width: 100%;
       max-width: 480px;
-      padding: 2rem;
     }
 
     h1 {
@@ -34,11 +35,11 @@
       letter-spacing: 0.02em;
     }
 
-    p {
+    .description {
       font-size: 1.1rem;
       color: #a0a0a0;
       line-height: 1.6;
-      margin-bottom: 2.5rem;
+      margin-bottom: 2rem;
     }
 
     a.btn {
@@ -51,19 +52,117 @@
       border-radius: 6px;
       font-size: 1rem;
       transition: background-color 0.2s, border-color 0.2s;
+      margin-bottom: 2.5rem;
     }
 
     a.btn:hover {
       background-color: #4e4e4e;
       border-color: #888;
     }
+
+    /* --- Chart --- */
+    #chart-section {
+      background-color: #242424;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      text-align: left;
+    }
+
+    #chart-section h2 {
+      font-size: 0.75rem;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 1rem;
+    }
+
+    #chart {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .bar-label {
+      width: 80px;
+      font-size: 0.85rem;
+      color: #b0b0b0;
+      flex-shrink: 0;
+      text-align: right;
+    }
+
+    .bar-track {
+      flex: 1;
+      background-color: #2e2e2e;
+      border-radius: 4px;
+      height: 22px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background-color: #555;
+      border-radius: 4px;
+      transition: width 0.6s ease;
+    }
+
+    .bar-count {
+      width: 30px;
+      font-size: 0.82rem;
+      color: #666;
+      flex-shrink: 0;
+    }
+
+    #chart-empty {
+      font-size: 0.85rem;
+      color: #555;
+      text-align: center;
+      padding: 0.5rem 0;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Who's that Eevee?</h1>
-    <p>Vote for the best eeveelutions and see what others have to say!</p>
-    <a class="btn" href="login.html">Get Started</a>
+    <p class="description">Choose the best eeveelution and see what others have to say!</p>
+    <a class="btn" href="login.html">Login to Get Started</a>
+
+    <div id="chart-section">
+      <h2>Top 3 Most Picked Eeveelutions</h2>
+      <div id="chart"><p id="chart-empty">No data yet.</p></div>
+    </div>
   </div>
+
+  <script>
+    fetch('/.netlify/functions/get-stats')
+      .then(r => r.json())
+      .then(data => renderChart(data.top3, document.getElementById('chart')))
+      .catch(() => {});
+
+    function renderChart(top3, container) {
+      if (!top3 || top3.length === 0) return;
+      const max = top3[0].count;
+      container.innerHTML = '';
+      top3.forEach(({ name, count }) => {
+        const pct = max > 0 ? (count / max) * 100 : 0;
+        const row = document.createElement('div');
+        row.className = 'bar-row';
+        row.innerHTML = `
+          <span class="bar-label">${name}</span>
+          <div class="bar-track">
+            <div class="bar-fill" style="width: ${pct}%"></div>
+          </div>
+          <span class="bar-count">${count}</span>
+        `;
+        container.appendChild(row);
+      });
+    }
+  </script>
 </body>
 </html>
