@@ -160,7 +160,7 @@
         }
 
         sessionStorage.setItem('username', data.username);
-        window.location.href = 'eevee.html';
+        await redirectAfterLogin(data.username);
       } catch {
         errorMsg.textContent = 'Network error. Please try again.';
       } finally {
@@ -168,6 +168,24 @@
         loginBtn.textContent = 'Login';
       }
     });
+
+    async function redirectAfterLogin(username) {
+      try {
+        const res = await fetch(`/.netlify/functions/get-user-post?username=${encodeURIComponent(username)}`);
+        const data = await res.json();
+        if (data.post) {
+          sessionStorage.setItem('postId', data.post.id);
+          sessionStorage.setItem('picks', JSON.stringify(data.post.picks));
+          sessionStorage.setItem('comment', data.post.comment);
+          sessionStorage.setItem('postAuthor', username);
+          window.location.href = 'review.html';
+        } else {
+          window.location.href = 'eevee.html';
+        }
+      } catch {
+        window.location.href = 'eevee.html';
+      }
+    }
 
     // Allow pressing Enter to submit
     [usernameInput, passwordInput].forEach(input => {
