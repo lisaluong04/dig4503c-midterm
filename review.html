@@ -283,6 +283,14 @@
       font-size: 1.1rem;
       color: #ccc;
       flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
     .post-meta {
@@ -515,8 +523,12 @@
       // Header
       const header = document.createElement('div');
       header.className = 'post-header';
+      const avatarContent = post.profilePicture
+        ? `<img src="${post.profilePicture}" alt="${post.username}" />`
+        : post.username.charAt(0).toUpperCase();
+
       header.innerHTML = `
-        <div class="avatar">${post.username.charAt(0).toUpperCase()}</div>
+        <div class="avatar">${avatarContent}</div>
         <div class="post-meta">
           <span class="post-username">${post.username}</span>
           <span class="post-date">${formatDate(post.createdAt)}</span>
