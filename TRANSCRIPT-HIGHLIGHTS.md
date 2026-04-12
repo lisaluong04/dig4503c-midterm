@@ -10,4 +10,4 @@ After adding a few features to the reviews feed, I manually tested each function
 
 ## 3. Logic fixes
 
-Throughout our chat history, I made sure to clearly define certain requirements. For example, "If the user has made a post, display review.html when they login", since I noticed upon logging in, it redirected to a page that didn't make sense if the user has submitted a post. Another example is "When on review.html the user should be able to see all posts made", which is a main feature for this feed-like page that Clause orginally overlooked.
+Throughout our chat history, I made sure to clearly define certain requirements. For example, "If the user has made a post, display review.html when they login", since I noticed upon logging in, it redirected to a page that didn't make sense if the user has submitted a post. Another example is "When on review.html the user should be able to see all posts made", which is a main feature for this feed-like page that Clause orginally overlooked. This proves the importance of manually testing the logic behind each feature and function.
