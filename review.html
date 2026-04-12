@@ -21,8 +21,28 @@
 
     .page-wrapper {
       width: 100%;
-      max-width: 520px;
+      max-width: 1000px;
       margin: 0 auto;
+    }
+
+    /* --- Two-column layout --- */
+    #main-layout {
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+
+    #left-panel {
+      width: 260px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    #right-panel {
+      flex: 1;
+      min-width: 0;
     }
 
     /* --- Nav bar --- */
@@ -85,7 +105,6 @@
       border: 1px solid #333;
       border-radius: 10px;
       padding: 1.25rem 1.5rem;
-      margin-bottom: 1.25rem;
     }
 
     #chart-section h2 {
@@ -155,7 +174,6 @@
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
-      margin-bottom: 1.25rem;
     }
 
     #search {
@@ -404,33 +422,39 @@
       <button id="settings-btn" title="Settings" onclick="window.location.href='settings.html'"></button>
       <button id="logout-btn">Logout</button>
     </div>
-    <div id="chart-section">
-      <h2>Most Popular Eeveelutions</h2>
-      <div id="chart"></div>
-    </div>
+    <div id="main-layout">
+      <div id="left-panel">
+        <div id="chart-section">
+          <h2>Most Popular Eeveelutions</h2>
+          <div id="chart"></div>
+        </div>
 
-    <div id="controls">
-      <input id="search" type="text" placeholder="Search by username..." />
-      <select id="sort">
-        <option value="newest">Sort: Newest</option>
-        <option value="likes-high">Sort: Most Popular</option>
-        <option value="likes-low">Sort: Least Popular</option>
-      </select>
-      <span class="filter-label">Filter by Eeveelution</span>
-      <div id="filter-chips">
-        <button class="chip" data-name="Espeon">Espeon</button>
-        <button class="chip" data-name="Flareon">Flareon</button>
-        <button class="chip" data-name="Glaceon">Glaceon</button>
-        <button class="chip" data-name="Jolteon">Jolteon</button>
-        <button class="chip" data-name="Leafeon">Leafeon</button>
-        <button class="chip" data-name="Sylveon">Sylveon</button>
-        <button class="chip" data-name="Umbreon">Umbreon</button>
-        <button class="chip" data-name="Vaporeon">Vaporeon</button>
+        <div id="controls">
+          <input id="search" type="text" placeholder="Search by username..." />
+          <select id="sort">
+            <option value="newest">Sort: Newest</option>
+            <option value="likes-high">Sort: Most Popular</option>
+            <option value="likes-low">Sort: Least Popular</option>
+          </select>
+          <span class="filter-label">Filter by Eeveelution</span>
+          <div id="filter-chips">
+            <button class="chip" data-name="Espeon">Espeon</button>
+            <button class="chip" data-name="Flareon">Flareon</button>
+            <button class="chip" data-name="Glaceon">Glaceon</button>
+            <button class="chip" data-name="Jolteon">Jolteon</button>
+            <button class="chip" data-name="Leafeon">Leafeon</button>
+            <button class="chip" data-name="Sylveon">Sylveon</button>
+            <button class="chip" data-name="Umbreon">Umbreon</button>
+            <button class="chip" data-name="Vaporeon">Vaporeon</button>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div id="feed">
-      <p id="loading">Loading posts...</p>
+      <div id="right-panel">
+        <div id="feed">
+          <p id="loading">Loading posts...</p>
+        </div>
+      </div>
     </div>
   </div>
 
