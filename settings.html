@@ -281,7 +281,7 @@
         const res = await fetch(`/.netlify/functions/get-profile?username=${encodeURIComponent(username)}`);
         const data = await res.json();
         renderAvatar(data.profilePicture);
-        document.getElementById('screen-name-input').value = data.screenName || '';
+        document.getElementById('screen-name-input').value = data.displayName || '';
       } catch {
         // silently ignore; avatar will show initials
         renderAvatar(null);
@@ -383,11 +383,11 @@
         const res = await fetch('/.netlify/functions/update-profile', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, screenName: val })
+          body: JSON.stringify({ username, displayName: val })
         });
         const data = await res.json();
         if (res.ok) {
-          sessionStorage.setItem('screenName', val.trim());
+          sessionStorage.setItem('displayName', val.trim());
           setStatus(nameStatus, 'Screen name saved.', true);
         } else {
           setStatus(nameStatus, data.error || 'Failed to save.', false);

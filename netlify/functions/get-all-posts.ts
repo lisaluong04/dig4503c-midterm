@@ -15,11 +15,11 @@ export const handler: Handler = async (event) => {
     // Fetch profile pictures for all unique post authors in one query
     const authorNames = [...new Set(posts.map(p => p.username))];
     const authorProfiles = authorNames.length > 0
-        ? await db.select({ username: users.username, profilePicture: users.profilePicture })
+        ? await db.select({ username: users.username, profilePicture: users.profilePicture, displayName: users.displayName })
               .from(users)
         : [];
     const profileMap = Object.fromEntries(
-        authorProfiles.map(u => [u.username, u.profilePicture ?? null])
+        authorProfiles.map(u => [u.username, { profilePicture: u.profilePicture ?? null, displayName: u.displayName ?? null }])
     );
 
     const enriched = await Promise.all(posts.map(async (post) => {
@@ -40,7 +40,8 @@ export const handler: Handler = async (event) => {
             picks: JSON.parse(post.picks),
             likeCount: Number(likeCount),
             userLiked,
-            profilePicture: profileMap[post.username] ?? null
+            profilePicture: profileMap[post.username]?.profilePicture ?? null,
+            displayName: profileMap[post.username]?.displayName ?? null
         };
     }));
 

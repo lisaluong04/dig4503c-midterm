@@ -10,7 +10,7 @@ export const users = pgTable('users', {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
     username: varchar({ length: 100 }).notNull().unique(),
     passwordHash: text().notNull(),
-    screenName: varchar('screen_name', { length: 100 }),
+    displayName: varchar('display_name', { length: 100 }),
     profilePicture: text('profile_picture')
 });
 

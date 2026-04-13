@@ -18,7 +18,7 @@ export const handler: Handler = async (event) => {
     }
 
     const result = await db
-        .select({ screenName: users.screenName, profilePicture: users.profilePicture })
+        .select({ displayName: users.displayName, profilePicture: users.profilePicture })
         .from(users)
         .where(eq(users.username, username));
 
@@ -32,7 +32,7 @@ export const handler: Handler = async (event) => {
     return {
         statusCode: 200,
         body: JSON.stringify({
-            screenName: result[0].screenName ?? null,
+            displayName: result[0].displayName ?? null,
             profilePicture: result[0].profilePicture ?? null
         })
     };

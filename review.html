@@ -530,7 +530,7 @@
       header.innerHTML = `
         <div class="avatar">${avatarContent}</div>
         <div class="post-meta">
-          <span class="post-username">${post.username}</span>
+          <span class="post-username">${post.displayName || post.username}</span>
           <span class="post-date">${formatDate(post.createdAt)}</span>
         </div>
       `;

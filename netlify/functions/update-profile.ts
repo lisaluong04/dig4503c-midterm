@@ -8,7 +8,7 @@ export const handler: Handler = async (event) => {
         return { statusCode: 405, body: 'Method Not Allowed' };
     }
 
-    const { username, screenName, profilePicture } = JSON.parse(event.body || '{}');
+    const { username, displayName, profilePicture } = JSON.parse(event.body || '{}');
 
     if (!username) {
         return {
@@ -19,15 +19,15 @@ export const handler: Handler = async (event) => {
 
     const updates: Record<string, string | null> = {};
 
-    if (screenName !== undefined) {
-        const trimmed = (screenName as string).trim();
+    if (displayName !== undefined) {
+        const trimmed = (displayName as string).trim();
         if (trimmed.length > 100) {
             return {
                 statusCode: 400,
                 body: JSON.stringify({ error: 'Screen name too long (max 100 characters)' })
             };
         }
-        updates.screenName = trimmed || null;
+        updates.displayName = trimmed || null;
     }
 
     if (profilePicture !== undefined) {
