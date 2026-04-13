@@ -12,6 +12,7 @@ My midterm project will allow users to choose who their favorite Pokemon eeveelu
 - Sort submissions by popularity
 - Allow user to "like" other user's submissions
 - Display live popularity tracker
+- Settings allows users to set profile picture and display name
 
 ## Techstack
 
