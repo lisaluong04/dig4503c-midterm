@@ -184,6 +184,149 @@
 
     .status-ok  { color: #5a9a5a; }
     .status-err { color: #c0392b; }
+
+    .section-divider {
+      border: none;
+      border-top: 1px solid #333;
+      margin: 1.25rem 0;
+    }
+
+    .subsection-label {
+      font-size: 0.75rem;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+      margin-bottom: 0.85rem;
+    }
+
+    .pw-field {
+      position: relative;
+      margin-bottom: 0.75rem;
+    }
+
+    .pw-field input {
+      width: 100%;
+      background-color: #2e2e2e;
+      border: 1px solid #4a4a4a;
+      border-radius: 6px;
+      color: #e0e0e0;
+      font-family: inherit;
+      font-size: 0.95rem;
+      padding: 0.6rem 2.5rem 0.6rem 0.75rem;
+      margin-bottom: 0;
+    }
+
+    .pw-field input:focus {
+      outline: none;
+      border-color: #777;
+    }
+
+    .eye-btn {
+      position: absolute;
+      right: 0.6rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #555;
+      cursor: pointer;
+      padding: 0.2rem;
+      display: flex;
+      align-items: center;
+      line-height: 1;
+    }
+
+    .eye-btn:hover:not(:disabled) {
+      background: none;
+      border: none;
+      color: #aaa;
+    }
+
+    .delete-account-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .delete-account-wrap p {
+      font-size: 0.85rem;
+      color: #666;
+      line-height: 1.4;
+    }
+
+    /* --- Confirmation modal --- */
+    #confirm-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.65);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    #confirm-overlay.visible {
+      display: flex;
+    }
+
+    #confirm-modal {
+      background-color: #242424;
+      border: 1px solid #444;
+      border-radius: 12px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 380px;
+    }
+
+    #confirm-modal h3 {
+      font-size: 1.1rem;
+      color: #f0f0f0;
+      margin-bottom: 0.75rem;
+    }
+
+    #confirm-modal p {
+      font-size: 0.9rem;
+      color: #888;
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+    }
+
+    #confirm-modal p strong {
+      color: #c0392b;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+    }
+
+    #cancel-delete-btn {
+      background: none;
+      border-color: #444;
+      color: #888;
+    }
+
+    #cancel-delete-btn:hover:not(:disabled) {
+      border-color: #777;
+      color: #d4d4d4;
+      background: none;
+    }
+
+    #confirm-delete-btn {
+      background-color: #5a1a1a;
+      border-color: #a05050;
+      color: #d47070;
+    }
+
+    #confirm-delete-btn:hover:not(:disabled) {
+      background-color: #7a2a2a;
+      border-color: #d47070;
+      color: #f0a0a0;
+    }
   </style>
 </head>
 <body>
@@ -208,14 +351,64 @@
       <p class="status-msg" id="pfp-status"></p>
     </div>
 
-    <!-- Display name -->
+    <!-- Account settings -->
     <div class="section">
-      <h2>Display Name</h2>
+      <h2>Account Settings</h2>
+
+      <!-- Display name -->
       <p class="hint">Displayed separately from your login username</p>
-      <label for="screen-name-input">Display name</label>
       <input type="text" id="screen-name-input" maxlength="100" placeholder="Enter a display name…" />
       <button id="save-name-btn">Save</button>
       <p class="status-msg" id="name-status"></p>
+
+      <hr class="section-divider" />
+
+      <!-- Change password -->
+      <h3 class="subsection-label">Change Password</h3>
+
+      <div class="pw-field">
+        <input type="password" id="current-pw" placeholder="Current password" autocomplete="current-password" />
+        <button class="eye-btn" id="eye-current" type="button" aria-label="Show password">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+
+      <div class="pw-field">
+        <input type="password" id="new-pw" placeholder="New password" autocomplete="new-password" />
+        <button class="eye-btn" id="eye-new" type="button" aria-label="Show password">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+
+      <div class="pw-field">
+        <input type="password" id="confirm-pw" placeholder="Confirm new password" autocomplete="new-password" />
+        <button class="eye-btn" id="eye-confirm" type="button" aria-label="Show password">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+
+      <button id="change-pw-btn">Change Password</button>
+      <p class="status-msg" id="pw-status"></p>
+
+      <hr class="section-divider" />
+
+      <!-- Delete account -->
+      <div class="delete-account-wrap">
+        <p>Permanently delete your account and all associated data.</p>
+        <button id="delete-account-btn" class="btn-danger">Delete Account</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation modal -->
+  <div id="confirm-overlay">
+    <div id="confirm-modal">
+      <h3>Delete account?</h3>
+      <p>This will permanently delete your account, your post, and all your likes. <strong>This cannot be undone.</strong></p>
+      <div class="modal-actions">
+        <button id="cancel-delete-btn">Cancel</button>
+        <button id="confirm-delete-btn">Delete Account</button>
+      </div>
     </div>
   </div>
 
@@ -397,6 +590,132 @@
       } finally {
         saveBtn.disabled = false;
         saveBtn.textContent = 'Save';
+      }
+    });
+
+    // ── change password ───────────────────────────────────────────────────────
+
+    const EYE_OPEN = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+    const EYE_OFF  = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+
+    function setupEyeToggle(inputId, btnId) {
+      const input = document.getElementById(inputId);
+      const btn   = document.getElementById(btnId);
+      btn.addEventListener('click', () => {
+        const hidden = input.type === 'password';
+        input.type   = hidden ? 'text' : 'password';
+        btn.innerHTML = hidden ? EYE_OFF : EYE_OPEN;
+        btn.setAttribute('aria-label', hidden ? 'Hide password' : 'Show password');
+      });
+    }
+
+    setupEyeToggle('current-pw', 'eye-current');
+    setupEyeToggle('new-pw',     'eye-new');
+    setupEyeToggle('confirm-pw', 'eye-confirm');
+
+    const pwStatus = document.getElementById('pw-status');
+
+    document.getElementById('change-pw-btn').addEventListener('click', async () => {
+      const currentPw = document.getElementById('current-pw').value;
+      const newPw     = document.getElementById('new-pw').value;
+      const confirmPw = document.getElementById('confirm-pw').value;
+
+      if (!currentPw || !newPw || !confirmPw) {
+        setStatus(pwStatus, 'Please fill out all password fields.', false);
+        return;
+      }
+
+      if (newPw !== confirmPw) {
+        setStatus(pwStatus, 'New passwords do not match.', false);
+        return;
+      }
+
+      if (newPw.length < 6) {
+        setStatus(pwStatus, 'New password must be at least 6 characters.', false);
+        return;
+      }
+
+      clearStatus(pwStatus);
+      const changeBtn = document.getElementById('change-pw-btn');
+      changeBtn.disabled = true;
+      changeBtn.textContent = 'Saving…';
+
+      try {
+        const res = await fetch('/.netlify/functions/change-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, currentPassword: currentPw, newPassword: newPw })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setStatus(pwStatus, 'Password changed successfully.', true);
+          document.getElementById('current-pw').value = '';
+          document.getElementById('new-pw').value     = '';
+          document.getElementById('confirm-pw').value = '';
+        } else {
+          setStatus(pwStatus, data.error || 'Failed to change password.', false);
+        }
+      } catch {
+        setStatus(pwStatus, 'Network error.', false);
+      } finally {
+        changeBtn.disabled = false;
+        changeBtn.textContent = 'Change Password';
+      }
+    });
+
+    // ── delete account ────────────────────────────────────────────────────────
+
+    const overlay = document.getElementById('confirm-overlay');
+
+    document.getElementById('delete-account-btn').addEventListener('click', () => {
+      overlay.classList.add('visible');
+    });
+
+    document.getElementById('cancel-delete-btn').addEventListener('click', () => {
+      overlay.classList.remove('visible');
+    });
+
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) overlay.classList.remove('visible');
+    });
+
+    document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+      const confirmBtn = document.getElementById('confirm-delete-btn');
+      const cancelBtn = document.getElementById('cancel-delete-btn');
+      confirmBtn.disabled = true;
+      cancelBtn.disabled = true;
+      confirmBtn.textContent = 'Deleting…';
+
+      try {
+        const res = await fetch('/.netlify/functions/delete-account', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username })
+        });
+
+        if (res.ok) {
+          sessionStorage.clear();
+          document.getElementById('confirm-modal').innerHTML = `
+            <p style="text-align:center;color:#d4d4d4;font-size:1rem;line-height:1.7;padding:0.5rem 0;">
+              Account deleted successfully.<br>Redirecting to home page...
+            </p>
+          `;
+          setTimeout(() => { window.location.href = 'index.html'; }, 2500);
+        } else {
+          const data = await res.json();
+          confirmBtn.disabled = false;
+          cancelBtn.disabled = false;
+          confirmBtn.textContent = 'Delete Account';
+          overlay.classList.remove('visible');
+          const nameStatus = document.getElementById('name-status');
+          setStatus(nameStatus, data.error || 'Failed to delete account.', false);
+        }
+      } catch {
+        confirmBtn.disabled = false;
+        cancelBtn.disabled = false;
+        confirmBtn.textContent = 'Delete Account';
+        overlay.classList.remove('visible');
+        setStatus(document.getElementById('name-status'), 'Network error.', false);
       }
     });
   </script>

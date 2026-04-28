@@ -1,5 +1,5 @@
 import type { Handler } from '@netlify/functions';
-import { eq, and, count } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { db } from '../../db/index';
 import { userPosts, likes } from '../../db/schema';
 
@@ -33,13 +33,12 @@ export const handler: Handler = async (event) => {
         await db.insert(likes).values({ postId, username });
     }
 
-    const [{ value: likeCount }] = await db
-        .select({ value: count() })
-        .from(likes)
-        .where(eq(likes.postId, postId));
+    const currentLikes = await db.select().from(likes).where(eq(likes.postId, postId));
+    const likeCount = currentLikes.length;
+    const likers = currentLikes.map(l => l.username);
 
     return {
         statusCode: 200,
-        body: JSON.stringify({ liked: existing.length === 0, likeCount: Number(likeCount) })
+        body: JSON.stringify({ liked: existing.length === 0, likeCount, likers })
     };
 };

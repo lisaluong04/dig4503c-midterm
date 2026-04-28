@@ -38,11 +38,36 @@
       display: flex;
       flex-direction: column;
       gap: 1.25rem;
+      position: sticky;
+      top: 2rem;
     }
 
     #right-panel {
       flex: 1;
       min-width: 0;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 1rem;
+      }
+
+      #main-layout {
+        flex-direction: column;
+      }
+
+      #left-panel {
+        width: 100%;
+        position: static;
+      }
+
+      .picks {
+        gap: 0.5rem;
+      }
+
+      .pick img {
+        max-width: 60px;
+      }
     }
 
     /* --- Nav bar --- */
@@ -261,10 +286,10 @@
       background-color: #242424;
       border: 1px solid #3a3a3a;
       border-radius: 12px;
-      overflow: hidden;
     }
 
     .post-header {
+      border-radius: 12px 12px 0 0;
       display: flex;
       align-items: center;
       gap: 0.75rem;
@@ -422,6 +447,62 @@
       border-color: #a05050;
       color: #d47070;
     }
+
+    .like-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    .likes-tooltip {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 0;
+      background-color: #1e1e1e;
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 0.5rem 0.75rem;
+      min-width: 140px;
+      max-width: 220px;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .likes-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 14px;
+      border: 5px solid transparent;
+      border-top-color: #444;
+    }
+
+    .like-wrapper:hover .likes-tooltip {
+      display: block;
+    }
+
+    .tooltip-title {
+      font-size: 0.68rem;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.35rem;
+    }
+
+    .tooltip-liker {
+      font-size: 0.82rem;
+      color: #b0b0b0;
+      padding: 0.1rem 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tooltip-empty {
+      font-size: 0.82rem;
+      color: #555;
+      font-style: italic;
+    }
   </style>
 </head>
 <body>
@@ -565,6 +646,22 @@
       likeBtn.textContent = `${post.userLiked ? '♥' : '♡'} ${post.likeCount}`;
       likeBtn.disabled = isOwner;
 
+      const likeWrapper = document.createElement('div');
+      likeWrapper.className = 'like-wrapper';
+
+      const tooltip = document.createElement('div');
+      tooltip.className = 'likes-tooltip';
+
+      function buildTooltipContent(likers) {
+        const title = '<div class="tooltip-title">Liked by</div>';
+        if (!likers || likers.length === 0) {
+          return title + '<div class="tooltip-empty">No likes yet</div>';
+        }
+        return title + likers.map(name => `<div class="tooltip-liker">${name}</div>`).join('');
+      }
+
+      tooltip.innerHTML = buildTooltipContent(post.likers || []);
+
       likeBtn.addEventListener('click', async () => {
         likeBtn.disabled = true;
         const res = await fetch('/.netlify/functions/like', {
@@ -576,9 +673,12 @@
         if (res.ok) {
           likeBtn.textContent = `${data.liked ? '♥' : '♡'} ${data.likeCount}`;
           likeBtn.classList.toggle('liked', data.liked);
+          tooltip.innerHTML = buildTooltipContent(data.likers || []);
         }
         likeBtn.disabled = false;
       });
+
+      likeWrapper.append(tooltip, likeBtn);
 
       const footerRight = document.createElement('div');
       footerRight.className = 'footer-right';
@@ -610,7 +710,7 @@
         footerRight.append(editBtn, deleteBtn);
       }
 
-      footer.append(likeBtn, footerRight);
+      footer.append(likeWrapper, footerRight);
       card.append(header, body, footer);
       return card;
     }

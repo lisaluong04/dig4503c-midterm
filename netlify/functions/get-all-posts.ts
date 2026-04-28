@@ -1,5 +1,5 @@
 import type { Handler } from '@netlify/functions';
-import { desc, eq, count } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { db } from '../../db/index';
 import { userPosts, likes, users } from '../../db/schema';
 
@@ -23,23 +23,17 @@ export const handler: Handler = async (event) => {
     );
 
     const enriched = await Promise.all(posts.map(async (post) => {
-        const [{ value: likeCount }] = await db
-            .select({ value: count() })
-            .from(likes)
-            .where(eq(likes.postId, post.id));
-
-        let userLiked = false;
-        if (username) {
-            const userLike = await db.select().from(likes)
-                .where(eq(likes.postId, post.id));
-            userLiked = userLike.some(l => l.username === username);
-        }
+        const postLikes = await db.select().from(likes).where(eq(likes.postId, post.id));
+        const likeCount = postLikes.length;
+        const userLiked = username ? postLikes.some(l => l.username === username) : false;
+        const likers = postLikes.map(l => profileMap[l.username]?.displayName || l.username);
 
         return {
             ...post,
             picks: JSON.parse(post.picks),
-            likeCount: Number(likeCount),
+            likeCount,
             userLiked,
+            likers,
             profilePicture: profileMap[post.username]?.profilePicture ?? null,
             displayName: profileMap[post.username]?.displayName ?? null
         };
